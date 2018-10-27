@@ -1,0 +1,19 @@
+{
+  "name": "create-fukuro-react-app",
+  "version": "1.0.0",
+  "description": "A wrapper around create-react-app which adds packages and a basic boilerplate for your different web application projects. Helps you get up and running quickly.",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "dev-start": "nodemon index.js"
+  },
+  "author": "Fukurosan",
+  "license": "MIT",
+  "dependencies": {
+    "colors": "^1.1.2",
+    "shelljs": "^0.7.8"
+  },
+  "bin": {
+    "create-fukuro-react-app": "index.js"
+  }
+}
