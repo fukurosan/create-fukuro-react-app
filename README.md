@@ -2,16 +2,14 @@
 
 ## Installation & Usage
 
-Install globally* and create a new application:
+Create a new application:
 ```
-npm install -g create-fukuro-react-app
+npx create-fukuro-react-app
 cd dir/where/I/want/my/project
 create-fukuro-react-app app-name
 cd app-name
 npm start
 ```
-
-\*`create-fukuro-react-app` is reliant on [`create-react-app`](https://github.com/facebookincubator/create-react-app). Please ensure that npx is installed.
 
 ## What is this?
 
