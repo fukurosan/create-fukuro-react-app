@@ -8,103 +8,139 @@ let appName = process.argv[2]
 let appDirectory = `${process.cwd()}/${appName}`
 
 const run = async () => {
-  let success = await createReactApp()
-  if (!success) {
-    console.log('Something went wrong while trying to create a new React app using create-react-app.'.red)
-    return false;
-  }
-  await cdIntoNewApp()
-  await installDevPackages()
-  await installProdPackages()
-  await createFolders()
-  await writeTemplates()
+    let success = await createReactApp()
+    if (!success) {
+        console.log('Something went wrong while trying to create a new React app using create-react-app.'.red)
+        return false;
+    }
+    await cdIntoNewApp()
+    await installDevPackages()
+    await installProdPackages()
+    await removeUnnecessaryFiles()
+    await createFolders()
+    await writeTemplates()
+    await insertStaticFiles()
+    await commitGIT()
 
-  console.log('\nAll done and ready to go!\n'.green)
+    console.log('\nAll done and ready to go!\n'.green)
 }
 
 const createReactApp = () => {
-  return new Promise(resolve => {
-    console.log('Running create-react-app...'.cyan)
-    if (appName) {
-      shell.exec(`npx create-react-app ${appName}`, () => {
-        console.log('\nSuccessfully ran create-react-app\n'.green)
-        resolve(true)
-      })
-    } else {
-      console.log('\nNo app name was provided.'.red)
-      console.log('\nProvide an app name in the following format: ')
-      console.log('\ncreate-fukuro-react-app your-app-name\n'.cyan)
-      resolve(false)
-    }
-  })
+    return new Promise(resolve => {
+        console.log('Running create-react-app...'.cyan)
+        if (appName) {
+            shell.exec(`npx create-react-app ${appName}`, () => {
+                console.log('\nSuccessfully ran create-react-app\n'.green)
+                resolve(true)
+            })
+        } else {
+            console.log('\nNo app name was provided.'.red)
+            console.log('\nProvide an app name in the following format: ')
+            console.log('\ncreate-fukuro-react-app your-app-name\n'.cyan)
+            resolve(false)
+        }
+    })
 }
 
 const cdIntoNewApp = () => {
-  return new Promise(resolve => {
-    shell.cd(appDirectory)
-    resolve()
-  })
+    return new Promise(resolve => {
+        shell.cd(appDirectory)
+        resolve()
+    })
+}
+
+const removeUnnecessaryFiles = () => {
+    return new Promise(resolve => {
+        console.log('\nCleaning generated files...\n'.cyan)
+        fs.unlinkSync(`${appDirectory}/src/App.css`)
+        fs.unlinkSync(`${appDirectory}/src/logo.svg`)
+        console.log('\nSuccessfully cleaned files\n'.green)
+        resolve()
+    })
 }
 
 const installDevPackages = () => {
-  return new Promise(resolve => {
-    console.log('\nInstalling react-router-dom and node-sass...\n'.cyan)
-    shell.exec(`npm install -D react-router-dom node-sass --save`, () => {
-      console.log('\nSuccessfully installed packages\n'.green)
-      resolve()
+    return new Promise(resolve => {
+        console.log('\nInstalling react-router-dom and node-sass...\n'.cyan)
+        shell.exec(`npm install -D react-router-dom node-sass --save`, () => {
+            console.log('\nSuccessfully installed packages\n'.green)
+            resolve()
+        })
     })
-  })
 }
 
 const installProdPackages = () => {
-  return new Promise(resolve => {
-    console.log('\nInstalling axios, highcharts, bootstrap, jquery and popper.js...\n'.cyan)
-    shell.exec(`npm install axios highcharts bootstrap jquery popper.js --save`, () => {
-      console.log('\nSuccessfully installed packages\n'.green)
-      resolve()
+    return new Promise(resolve => {
+        console.log('\nInstalling axios, highcharts, bootstrap, jquery and popper.js...\n'.cyan)
+        shell.exec(`npm install axios highcharts bootstrap jquery popper.js --save`, () => {
+            console.log('\nSuccessfully installed packages\n'.green)
+            resolve()
+        })
     })
-  })
 }
 
 const createFolders = () => {
-  return new Promise(resolve => {
-    console.log('\nCreating folder structure...'.cyan)
-    shell.cd('src')
-    shell.mkdir('Services')
-    shell.mkdir('Data')
-    shell.mkdir('Assets')
-    shell.cd('Assets')
-    shell.mkdir('Img')
-    shell.mkdir('Styles')
-    shell.cd('../')
-    shell.mkdir('Components')
-    shell.cd('Components')
-    shell.mkdir('Pages')
-    shell.mkdir('Layout')
-    shell.cd('../')
-    shell.mkdir('Contexts')
-    console.log('\nSuccessfully Created folder structure\n'.green)
-    resolve()
-  })
+    return new Promise(resolve => {
+        console.log('\nCreating folder structure...'.cyan)
+        shell.cd('src')
+        shell.mkdir('Services')
+        shell.mkdir('Data')
+        shell.mkdir('Assets')
+        shell.cd('Assets')
+        shell.mkdir('Img')
+        shell.mkdir('Styles')
+        shell.cd('../')
+        shell.mkdir('Components')
+        shell.cd('Components')
+        shell.mkdir('Pages')
+        shell.mkdir('Layout')
+        shell.cd('../')
+        shell.mkdir('Contexts')
+        shell.cd("../")
+        console.log('\nSuccessfully Created folder structure\n'.green)
+        resolve()
+    })
 }
 
 const writeTemplates = () => {
-  return new Promise(resolve => {
-    console.log('\nWriting template files...'.cyan)
-    let promises = []
-    Object.keys(Template).forEach((fileName, i) => {
-      promises[i] = new Promise(resolve => {
-        fs.writeFile(`${appDirectory}/${fileName}`, Template[fileName], function (err) {
-          if (err) { return console.log(err) }
-          resolve()
+    return new Promise(resolve => {
+        console.log('\nWriting template files...'.cyan)
+        let promises = []
+        Object.keys(Template).forEach((fileName, i) => {
+            promises[i] = new Promise(resolve => {
+                fs.writeFile(`${appDirectory}/${fileName}`, Template[fileName], function (err) {
+                    if (err) { return console.log(err) }
+                    resolve()
+                })
+            })
         })
-      })
+        Promise.all(promises).then(() => {
+            console.log('\nSuccessfully wrote all template files.\n'.green)
+            resolve()
+        })
     })
-    Promise.all(promises).then(() => {
-      console.log('\nSuccessfully wrote all template files.\n'.green)
-      resolve()
+}
+
+const insertStaticFiles = () => {
+    return new Promise(resolve => {
+        console.log('\nCreating static files...\n'.cyan)
+        fs.writeFileSync(`${appDirectory}/.env`, "")
+        fs.writeFileSync(`${appDirectory}/.env.development`, "")
+        fs.writeFileSync(`${appDirectory}/.env.production`, "")
+        console.log('\nSuccessfully created all static files.\n'.green)
+        resolve()
     })
-  })
+}
+
+const commitGIT = () => {
+    return new Promise(resolve => {
+        console.log('\nCommitting GIT changes...\n'.cyan)
+        shell.exec(`git add .`, () => {
+            shell.exec(`git commit -m "create-fukuro-react-app"`)
+            console.log('\nSuccessfully ran GIT commands.')
+            resolve()
+        })
+    })
 }
 
 run()
