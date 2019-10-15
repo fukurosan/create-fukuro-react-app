@@ -4,9 +4,7 @@
 
 Create a new application:
 ```
-npx create-fukuro-react-app
-cd dir/where/I/want/my/project
-create-fukuro-react-app app-name
+npx create-fukuro-react-app app-name
 cd app-name
 npm start
 ```
